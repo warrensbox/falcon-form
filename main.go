@@ -34,10 +34,23 @@ type Thing struct {
 	Field2 string `json:"field2"`
 }
 
+type Message struct {
+	OwnerEmail     string `json:"owner_email"`
+	ContactEmail   string `json:"contact_email,omitempty"`
+	MessageContent string `json:"message_content"`
+}
+
 func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	fmt.Printf("Body size = %d. \n", len(request.Body))
 	fmt.Println("Headers:")
+	var msgContent Message
+	data := []byte(request.Body)
+	json.Unmarshal(data, &msgContent)
+
+	fmt.Println("Printing data")
+	fmt.Println(msgContent)
+	fmt.Println("Printing data")
 
 	t := Thing{45, "world"}
 	j, err := json.Marshal(t)
