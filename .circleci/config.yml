@@ -15,18 +15,12 @@ jobs:
 
   release:
     docker:
-      - image: circleci/golang:1.10
+      - image: warrensbox/go-aws-ubuntu:0.1.0
 
     steps:
       - checkout
       - run: 
           command: |
-            set +e
-            apt-get -y -qq update
-            apt-get -y -qq install python3.4-dev
-            curl -O https://bootstrap.pypa.io/get-pip.py
-            python3.4 get-pip.py --user
-            pip install awscli --upgrade --user
             make publish
 
 workflows:
