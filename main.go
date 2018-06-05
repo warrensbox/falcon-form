@@ -107,7 +107,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 	h := hermes.Hermes{
 		// Optional Theme
-		Theme: new(hermes.Flat),
+		Theme: new(hermes.Default),
 		Product: hermes.Product{
 			// Appears in header & footer of e-mails
 			Name: "Warren from resumex.io",
@@ -144,13 +144,20 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	// }
 
 	fromEmail := "support@resumex.io"
-	to_email := "umesh.veerasingam@gmail.com"
+	//to_email := "umesh.veerasingam@gmail.com"
+
+	to_email := msgContent.OwnerEmail
+	from_email := msgContent.ContactEmail
+
+	if from_email == "" {
+		from_email = to_email
+	}
 
 	var msg gophermail.Message
 	msg.SetFrom(fromEmail)
 	msg.AddTo(to_email)
-	msg.SetReplyTo(to_email)
-	msg.Subject = "Would you take a look at my resume?"
+	msg.SetReplyTo(from_email)
+	msg.Subject = "You've got a message from Message Falcon! "
 	msg.HTMLBody = emailBody
 
 	auth2 := smtp.PlainAuth("", SMTPUSER, SMTPPASS, SMTPEMAIL)
@@ -189,24 +196,40 @@ func errorExit(msg string, e error) {
 
 func WelcomeEmail(name string, url string) hermes.Email {
 	return hermes.Email{
+		// Body: hermes.Body{
+		// 	Name: name,
+		// 	Intros: []string{
+		// 		"The falcon has delivered your message from your website",
+		// 	},
+		// 	Actions: []hermes.Action{
+		// 		{
+		// 			Instructions: "To get started with ResumeX, please click here:",
+		// 		},
+		// 	},
+		// 	Greeting: "Hello",
+		// 	Outros: []string{
+		// 		"Need help, or have questions? Just send an email to support@resumex.io, we'd love to help.",
+		// 	},
+		// },
+
 		Body: hermes.Body{
 			Name: name,
-			Intros: []string{
-				"Welcome to ResumeX! We're very excited to have you on board.",
-			},
-			Actions: []hermes.Action{
-				{
-					Instructions: "To get started with ResumeX, please click here:",
-					Button: hermes.Button{
-						Text: "Start Working On My Resume",
-						Link: url + "/user",
-					},
-				},
-			},
-			Greeting: "Hello",
-			Outros: []string{
-				"Need help, or have questions? Just send an email to support@resumex.io, we'd love to help.",
-			},
+			FreeMarkdown: `
+					> _Hermes_ service will shutdown the **1st August 2017** for maintenance operations. 
+
+					Services will be unavailable based on the following schedule:
+
+					| Services | Downtime |
+					| :------:| :-----------: |
+					| Service A | 2AM to 3AM |
+					| Service B | 4AM to 5AM |
+					| Service C | 5AM to 6AM |
+
+					---
+
+					Feel free to contact us for any question regarding this matter at [support@hermes-example.com](mailto:support@hermes-example.com) or in our [Gitter](https://gitter.im/)
+
+					`,
 		},
 	}
 }
