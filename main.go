@@ -213,23 +213,18 @@ func WelcomeEmail(name string, url string) hermes.Email {
 		// },
 
 		Body: hermes.Body{
-			Name: name,
-			FreeMarkdown: `
-					> _Hermes_ service will shutdown the **1st August 2017** for maintenance operations. 
-
-					Services will be unavailable based on the following schedule:
-
-					| Services | Downtime |
-					| :------:| :-----------: |
-					| Service A | 2AM to 3AM |
-					| Service B | 4AM to 5AM |
-					| Service C | 5AM to 6AM |
-
-					---
-
-					Feel free to contact us for any question regarding this matter at [support@hermes-example.com](mailto:support@hermes-example.com) or in our [Gitter](https://gitter.im/)
-
-					`,
+			Title: "Welcome to Hermes",
+			Intros: []string{
+				"Welcome to Hermes! We're very excited to have you on board.",
+			},
+			Dictionary: []hermes.Entry{
+				{Key: "Firstname", Value: "Jon"},
+				{Key: "Lastname", Value: "Snow"},
+				{Key: "Birthday", Value: "01/01/283"},
+			},
+			Outros: []string{
+				"Need help, or have questions? Just reply to this email, we'd love to help.",
+			},
 		},
 	}
 }
