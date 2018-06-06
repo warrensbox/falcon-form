@@ -1,5 +1,22 @@
 package main
 
+/*
+* Version 0.0.1
+* Compatible on ANY browser
+ */
+
+/*** WORKFLOW ***/
+/*
+* 1- Get API request from API gateway
+* 2- Determine if request if POST, ignore every other request
+* 3- Parse request body and validate body, reject if violated
+* 4- If a request contains, contact_email, use contact_email as the 'reply to' option in the email body
+*    otherwise, use owner's email as the 'reply to'
+* 5- Pass message content (including optional phone number and email) to beautify
+* 6- Set Header status to '200 OK' if everything is successful or 403 if something went wrong
+* 7- Return json with 'Message sent' body
+ */
+
 import (
 	"context"
 	"encoding/json"
@@ -36,12 +53,15 @@ type Thing struct {
 
 type Message struct {
 	OwnerEmail     string `json:"owner_email"`
-	ContactEmail   string `json:"contact_email,omitempty"`
+	ContactEmail   string `json:"contact_email"`
+	ContactPhone   string `json:"contact_phone,omitempty"`
 	MessageContent string `json:"message_content"`
 }
 
 func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
+	tet := request.QueryStringParameters["ree"]
+	fmt.Println(tet)
 	fmt.Printf("Body size = %d. \n", len(request.Body))
 	fmt.Println("Headers:")
 	var msgContent Message
@@ -103,7 +123,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	fmt.Println(SMTPPORT)
 
 	url := "https://resumex.io"
-	name := "Becks"
+	//name := "Becks"
 
 	h := hermes.Hermes{
 		// Optional Theme
@@ -118,7 +138,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		},
 	}
 
-	emailcontent := WelcomeEmail(name, url)
+	emailcontent := WelcomeEmail(msgContent.ContactEmail, msgContent.ContactPhone, msgContent.MessageContent)
 
 	emailBody, errBody := h.GenerateHTML(emailcontent)
 	if errBody != nil {
@@ -194,34 +214,28 @@ func errorExit(msg string, e error) {
 	}
 }
 
-func WelcomeEmail(name string, url string) hermes.Email {
-	return hermes.Email{
-		// Body: hermes.Body{
-		// 	Name: name,
-		// 	Intros: []string{
-		// 		"The falcon has delivered your message from your website",
-		// 	},
-		// 	Actions: []hermes.Action{
-		// 		{
-		// 			Instructions: "To get started with ResumeX, please click here:",
-		// 		},
-		// 	},
-		// 	Greeting: "Hello",
-		// 	Outros: []string{
-		// 		"Need help, or have questions? Just send an email to support@resumex.io, we'd love to help.",
-		// 	},
-		// },
+func WelcomeEmail(contact_email string, phone_number string, msg_content string) hermes.Email {
 
+	dictionary := []hermes.Entry{
+		{Key: "Phone", Value: phone_number},
+		{Key: "Email", Value: contact_email},
+		{Key: "Message", Value: msg_content},
+	}
+
+	if phone_number == "" {
+		dictionary = []hermes.Entry{
+			{Key: "Email", Value: contact_email},
+			{Key: "Message", Value: msg_content},
+		}
+	}
+
+	return hermes.Email{
 		Body: hermes.Body{
-			Title: "Welcome to Hermes",
+			Title: "Hello",
 			Intros: []string{
-				"Welcome to Hermes! We're very excited to have you on board.",
+				"You got a message from a visitor..",
 			},
-			Dictionary: []hermes.Entry{
-				{Key: "Firstname", Value: "Jon"},
-				{Key: "Lastname", Value: "Snow"},
-				{Key: "Birthday", Value: "01/01/283"},
-			},
+			Dictionary: dictionary,
 			Outros: []string{
 				"Need help, or have questions? Just reply to this email, we'd love to help.",
 			},
