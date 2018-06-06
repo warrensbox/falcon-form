@@ -79,26 +79,26 @@ for (var i = 0; i < gaEvents.length; i++) {
 //
 // GeoIP Script
 //
-(function() {
-  "use strict";
-  window.addEventListener("load", function() {
-    var onSuccess = function(location) {
-      var country = location.country.iso_code;
-      var countryEl = document.getElementById("country");
-      if (countryEl) countryEl.value = country;
+// (function() {
+//   "use strict";
+//   window.addEventListener("load", function() {
+//     var onSuccess = function(location) {
+//       var country = location.country.iso_code;
+//       var countryEl = document.getElementById("country");
+//       if (countryEl) countryEl.value = country;
 
-      var subdivision = location.most_specific_subdivision.names.en;
-      var subdivisionEl = document.getElementById("subdivision")
-      if (subdivisionEl) subdivisionEl.value = subdivision;
+//       var subdivision = location.most_specific_subdivision.names.en;
+//       var subdivisionEl = document.getElementById("subdivision")
+//       if (subdivisionEl) subdivisionEl.value = subdivision;
 
-      var city = location.city.names.en;
-      var cityEl = document.getElementById("city")
-      if (cityEl) cityEl.value = city;
-    }
+//       var city = location.city.names.en;
+//       var cityEl = document.getElementById("city")
+//       if (cityEl) cityEl.value = city;
+//     }
 
-    geoip2.city(onSuccess);
-  }, false);
-}());
+//     geoip2.city(onSuccess);
+//   }, false);
+// }());
 
 
 //
