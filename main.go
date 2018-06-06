@@ -60,8 +60,18 @@ type Message struct {
 
 func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
-	tet := request.QueryStringParameters["ree"]
-	fmt.Println(tet)
+	//tet := request.QueryStringParameters["ree"]
+	emailParameter := request.PathParameters["proxy"]
+	fmt.Println("Printing head")
+	//fmt.Println(tet)
+	fmt.Println(emailParameter)
+	fmt.Println("Printing head")
+
+	fmt.Println("Printing body")
+	//fmt.Println(tet)
+	fmt.Println(request.Body["email"])
+	fmt.Println("Printing body")
+
 	fmt.Printf("Body size = %d. \n", len(request.Body))
 	fmt.Println("Headers:")
 	var msgContent Message
