@@ -1,0 +1,773 @@
+package main
+
+/*
+* Version 0.0.1
+* Compatible on ANY browser
+ */
+
+/*** WORKFLOW ***/
+/*
+* 1- Get API request from API gateway
+* 2- Determine if request if POST, ignore every other request
+* 3- Parse body from multiform url
+* 4- Parse request body and validate body, reject if violated
+* 5- If a request contains, contact_email, use contact_email as the 'reply to' option in the email body
+*    otherwise, use owner's email as the 'reply to'
+* 6- Pass message content (including optional phone number and email) to beautify
+* 7- Set Header status to '200 OK' if everything is successful or 403 if something went wrong
+* 8- Return json with 'Message sent' body
+ */
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"mime"
+	"mime/multipart"
+	"net/smtp"
+	"net/url"
+	"os"
+	"regexp"
+	"strings"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	ssm "github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/matcornic/hermes"
+	checkmail "github.com/warrensbox/falcon-form/lib"
+	gophermail "gopkg.in/jpoehls/gophermail.v0"
+)
+
+var (
+	HTTPMethodNotSupported = errors.New("no name was provided in the HTTP body")
+)
+
+// type Response struct {
+// 	StatusCode int               `json:"statusCode"`
+// 	Headers    map[string]string `json:"headers"`
+// 	Body       string            `json:"body"`
+// }
+
+type Message struct {
+	OwnerEmail     string `json:"owner_email"`
+	ContactEmail   string `json:"contact_email,omitempty"`
+	ContactPhone   string `json:"contact_phone,omitempty"`
+	MessageContent string `json:"message_content"`
+}
+
+//test comment
+const (
+	URLPARAM     = "message-falcon"
+	CONTACTEMAIL = "contact_email"
+	CONTACTPHONE = "contact_phone"
+	MSGCONTENT   = "message_content"
+)
+
+var (
+	ownerEmail   string
+	contactEmail string
+	contactPhone string
+	msgContent   string
+)
+
+func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	/* Determine if request is a multipart/form-data or application/json */
+	parameter := request.PathParameters["proxy"]
+
+	re := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+
+	if parameter == URLPARAM {
+		fmt.Println("It's json")
+		fmt.Println(parameter)
+
+	} else if re.MatchString(parameter) {
+		fmt.Println("It's a form")
+		errFormat := checkmail.ValidateFormat(parameter)
+		if errFormat != nil {
+			fmt.Println(errFormat)
+			os.Exit(1)
+		}
+		errDomain := checkmail.ValidateHost(parameter)
+		if errDomain != nil {
+			fmt.Println(errDomain)
+			os.Exit(1)
+		}
+
+		ownerEmail = parameter
+
+		urlSample, errURL := url.Parse("http://test.com?" + request.Body)
+		if errURL != nil {
+			fmt.Println(errURL)
+			os.Exit(1)
+		}
+
+		fmt.Printf("url sample %q \n", urlSample)
+		content, _ := url.ParseQuery(urlSample.RawQuery)
+		//fmt.Printf("phone %q \n", content[ContactPhone][0])
+		if len(content[CONTACTEMAIL]) < 0 && len(content[MSGCONTENT]) < 0 {
+			return events.APIGatewayProxyResponse{Body: "Invalid format", StatusCode: 401}, nil
+		} else {
+			fmt.Printf("email %q \n", content[CONTACTEMAIL][0])
+			fmt.Printf("msg %q \n", content[MSGCONTENT][0])
+
+			contactEmail = content[CONTACTEMAIL][0]
+			msgContent = content[MSGCONTENT][0]
+		}
+		if len(content[CONTACTPHONE]) < 0 {
+			fmt.Printf("no phone")
+		} else {
+			fmt.Printf("phone %q \n", content[CONTACTPHONE][0])
+			contactPhone = content[CONTACTPHONE][0]
+		}
+
+	}
+
+	os.Exit(0)
+
+	// resp := events.APIGatewayProxyResponse{Headers: make(map[string]string)}
+	// resp.Headers["Access-Control-Allow-Origin"] = "*"
+
+	// r := http.Request{}
+	// r.Header = make(map[string][]string)
+	// for k, v := range request.Headers {
+	// 	if k == "content-type" || k == "Content-Type" {
+	// 		r.Header.Set(k, v)
+	// 	}
+	// }
+	// body, err := base64.StdEncoding.DecodeString(request.Body)
+	// r.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	// if err != nil {
+	// 	resp.StatusCode = 403
+	// 	resp.Body = "Could not read request body"
+	// 	return resp, nil
+	// }
+
+	//formData := map[string]interface{}{}
+	buf := bytes.NewBufferString(request.Body)
+	writer := multipart.NewWriter(buf)
+	mediaType, params, err := mime.ParseMediaType(writer.FormDataContentType())
+	fmt.Println(mediaType)
+	fmt.Println(params)
+	fmt.Println(err)
+	if err == nil {
+		if strings.HasPrefix(mediaType, "multipart/") {
+			body := strings.NewReader(request.Body)
+			mr := multipart.NewReader(body, params["boundary"])
+			fmt.Println(mr)
+			// rr, _ := mr.ReadForm(10000)
+			// fmt.Println(rr.)
+			// 		for {
+			// 			_, readerErr := mr.NextPart()
+			// 			if readerErr == io.EOF {
+			// 				fmt.Println("FAILING EOF")
+			// 				//return formData, nil
+			// 			}
+			// 			if readerErr != nil {
+			// 				fmt.Println("FAILING READER")
+			// 				errorExit("FAILING READER", readerErr)
+			// 				//return formData, readerErr
+			// 			}
+			//b, readPartsErr := ioutil.ReadAll(p)
+			// 			// // Not bothering with the error here, it shouldn't really ever occur
+			// 			// // if it were to, I think it'd be a buffer overflow...but that couldn't
+			// 			// // happen because AWS Lambda has a POST limit that's far below that.
+			// 			// // Other read errors would have already been seen by this point (above).
+			// 			// if readPartsErr == nil {
+			// 			// 	formData[p.FormName()] = string(b)
+			// 			// }
+			// 		}
+		}
+	}
+
+	// fmt.Println(formData)
+
+	// //tet := request.QueryStringParameters["ree"]
+	// emailParameter := request.PathParameters["proxy"]
+	// fmt.Println("Printing head")
+	// //fmt.Println(tet)
+	// fmt.Println(emailParameter)
+	// fmt.Println("Printing head")
+
+	// fmt.Println("Printing body")
+	// fmt.Println(request.Body)
+	// fmt.Println("tet")
+	// fmt.Println(request.QueryStringParameters["owner_email"])
+	// fmt.Println(request.PathParameters["owner_email"])
+	// fmt.Println("tet")
+	// // buf := bytes.NewBufferString(request.Body)
+	// // writer := multipart.NewWriter(buf)
+
+	// // mediaType, params, err := mime.ParseMediaType(writer.FormDataContentType())
+	// // if err != nil {
+	// // 	log.Fatal(err)
+	// // }
+
+	// if strings.HasPrefix(mediaType, "multipart/") {
+	// 	mr := multipart.NewReader(buf, params["boundary"])
+	// 	//fmt.Println(mr.NextPart)
+	// 	//mr.ReadForm()
+	// 	// p, err1 := mr.NextPart()
+	// 	// if err1 == io.EOF {
+	// 	// 	log.Fatal("EOF")
+	// 	// }
+	// 	// if err1 != nil {
+	// 	// 	log.Fatal(err1)
+	// 	// }
+	// 	t, _ := mr.ReadForm(10000)
+	// 	fmt.Println(t)
+	// 	fmt.Println(mr)
+	// }
+	// ri := http.Request{}
+	// body, err2 := base64.StdEncoding.DecodeString(request.Body)
+
+	// ri.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	// if err2 != nil {
+	// 	//resp.StatusCode = 403
+	// 	//resp.Body = "Could not read request body"
+	// 	//fmt.Println(err2)
+	// 	fmt.Println(err2)
+	// 	//return resp, nil
+	// }
+	// fmt.Println("err2")
+	// fmt.Println(ri.FormValue("owner_email"))
+	// fmt.Println("err2")
+	// fmt.Println(writer.CreateFormField("owner_email"))
+	// //r, _ := writer.CreateFormField("owner_email")
+	// fmt.Println(writer.FormDataContentType())
+	// //fmt.Println(r)
+	// //fmt.Println(mr.ReadForm())
+	// // for k, v := range request.Body {
+	// // 	fmt.Println("key:", k)
+	// // 	fmt.Println("val:", v)
+	// // }
+
+	fmt.Println("Printing body")
+
+	fmt.Printf("Body size = %d. \n", len(request.Body))
+	fmt.Println("Headers:")
+	var msgContent Message
+	data := []byte(request.Body)
+	json.Unmarshal(data, &msgContent)
+
+	fmt.Println("Printing data")
+	fmt.Println(msgContent)
+	fmt.Println("Printing data")
+
+	session := session.Must(session.NewSession())
+	svc := ssm.New(session)
+
+	pass := &ssm.GetParameterInput{
+		Name:           aws.String("SMTP_PASS"),
+		WithDecryption: aws.Bool(true),
+	}
+
+	respPass, err := svc.GetParameter(pass)
+	errorExit("GetParameters", err)
+
+	SMTPPASS := *respPass.Parameter.Value
+	fmt.Println(SMTPPASS)
+
+	user := &ssm.GetParameterInput{
+		Name:           aws.String("SMTP_USER"),
+		WithDecryption: aws.Bool(true),
+	}
+
+	respUser, err := svc.GetParameter(user)
+
+	SMTPUSER := *respUser.Parameter.Value
+	fmt.Println(SMTPUSER)
+
+	smtpEmail := &ssm.GetParameterInput{
+		Name:           aws.String("SMTP_EMAIL"),
+		WithDecryption: aws.Bool(true),
+	}
+
+	respEmail, err := svc.GetParameter(smtpEmail)
+
+	SMTPEMAIL := *respEmail.Parameter.Value
+	fmt.Println(SMTPEMAIL)
+
+	smtpPort := &ssm.GetParameterInput{
+		Name:           aws.String("SMTP_PORT"),
+		WithDecryption: aws.Bool(true),
+	}
+
+	respPort, err := svc.GetParameter(smtpPort)
+
+	SMTPPORT := *respPort.Parameter.Value
+	fmt.Println(SMTPPORT)
+
+	url := "https://resumex.io"
+	//name := "Becks"
+
+	h := hermes.Hermes{
+		// Optional Theme
+		Theme: new(hermes.Default),
+		Product: hermes.Product{
+			// Appears in header & footer of e-mails
+			Name: "Warren from resumex.io",
+			Link: url,
+			// Optional product logo
+			//Logo:      imageHeader,
+			Copyright: "Ⓒ 2017 Keplerbox LLC - Crafted with ❤ in San Francisco, California",
+		},
+	}
+
+	emailcontent := WelcomeEmail(msgContent.ContactEmail, msgContent.ContactPhone, msgContent.MessageContent)
+
+	emailBody, errBody := h.GenerateHTML(emailcontent)
+	if errBody != nil {
+		fmt.Println(errBody)
+	}
+
+	// emailText, errText := h.GeneratePlainText(emailcontent)
+	// if errText != nil {
+	// 	fmt.Println(errText)
+	// }
+
+	// e := em.NewEmail()
+	// e.From = "warren.veerasingam@gmail.com"
+	// e.To = []string{"umesh.veerasingam@gmail.com"}
+	// e.Subject = "Ready to Kickass?"
+	// e.Text = []byte(emailText)
+	// e.HTML = []byte(emailBody)
+
+	// auth := smtp.PlainAuth("", SMTPUSER, SMTPPASS, SMTPEMAIL)
+	// errEmail := e.Send(SMTPPORT, auth)
+	// if errEmail != nil {
+	// 	fmt.Println(errEmail)
+	// }
+
+	fromEmail := "support@resumex.io"
+	//to_email := "umesh.veerasingam@gmail.com"
+
+	to_email := msgContent.OwnerEmail
+	from_email := msgContent.ContactEmail
+
+	if from_email == "" {
+		from_email = to_email
+	}
+
+	var msg gophermail.Message
+	msg.SetFrom(fromEmail)
+	msg.AddTo(to_email)
+	msg.SetReplyTo(from_email)
+	msg.Subject = "You've got a message from Message Falcon! "
+	msg.HTMLBody = emailBody
+
+	auth2 := smtp.PlainAuth("", SMTPUSER, SMTPPASS, SMTPEMAIL)
+	errEmail2 := gophermail.SendMail(SMTPPORT, auth2, &msg)
+	if errEmail2 != nil {
+		fmt.Println(errEmail2)
+	}
+
+	for key, value := range request.Headers {
+		fmt.Printf("  %s: %s\n", key, value)
+	}
+	if request.HTTPMethod == "GET" {
+		fmt.Printf("GET METHOD\n")
+		return events.APIGatewayProxyResponse{Body: request.Body, StatusCode: 200}, nil
+	} else if request.HTTPMethod == "POST" {
+		fmt.Printf("POST METHOD\n")
+		fmt.Printf(request.Body)
+		return events.APIGatewayProxyResponse{Body: request.Body, StatusCode: 200}, nil
+	} else {
+		fmt.Printf("NEITHER\n")
+		return events.APIGatewayProxyResponse{}, HTTPMethodNotSupported
+	}
+}
+
+func main() {
+
+	lambda.Start(HandleRequest)
+}
+
+func errorExit(msg string, e error) {
+	if e != nil {
+		fmt.Fprintf(os.Stderr, "ERROR: %s, %v\n", msg, e)
+		os.Exit(1)
+	}
+}
+
+func WelcomeEmail(contact_email string, phone_number string, msg_content string) hermes.Email {
+
+	dictionary := []hermes.Entry{
+		{Key: "Phone", Value: phone_number},
+		{Key: "Email", Value: contact_email},
+		{Key: "Message", Value: msg_content},
+	}
+
+	if phone_number == "" {
+		dictionary = []hermes.Entry{
+			{Key: "Email", Value: contact_email},
+			{Key: "Message", Value: msg_content},
+		}
+	}
+
+	return hermes.Email{
+		Body: hermes.Body{
+			Title: "Hello",
+			Intros: []string{
+				"You got a message from a visitor..",
+			},
+			Dictionary: dictionary,
+			Outros: []string{
+				"Need help, or have questions? Just reply to this email, we'd love to help.",
+			},
+		},
+	}
+}
+
+            <div class="col-12 col-md-6 mb-3">
+                <a href="implementation" class="card hover-card p-4 d-flex flex-items-center" data-ga-click="Offering, click, Implementation">
+                    <div class="offering-icon mr-4 d-none d-sm-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.95 97.09">
+                            <defs>
+                                <style>
+                                    .a,
+                                    .b {
+                                        fill: none;
+                                        stroke-linecap: round;
+                                        stroke-linejoin: round;
+                                        stroke-width: 2px;
+                                    }
+
+                                    .a {
+                                        stroke: #2088ff;
+                                    }
+
+                                    .b {
+                                        stroke: #79b8ff;
+                                    }
+                                </style>
+                            </defs>
+                            <title>icon</title>
+                            <line class="a" x1="84.2" y1="73.52" x2="25.89" y2="73.52" />
+                            <path class="a" d="M79,1h-48a6,6,0,0,0-5.2,3l-24,41.55a6,6,0,0,0,0,6l24,41.55a6,6,0,0,0,5.2,3H79a6,6,0,0,0,5.2-3l24-41.55a6,6,0,0,0,0-6L84.23,4A6,6,0,0,0,79,1Z"
+                            />
+                            <rect class="a" x="33.6" y="66" width="14.3" height="7.52" />
+                            <rect class="a" x="47.9" y="66" width="14.3" height="7.52" />
+                            <rect class="a" x="62.2" y="66" width="14.3" height="7.52" />
+                            <rect class="a" x="55.05" y="58.49" width="14.3" height="7.52" />
+                            <rect class="a" x="40.75" y="58.49" width="14.3" height="7.52" />
+                            <rect class="b" x="55.05" y="31.9" width="14.66" height="7.52" />
+                            <rect class="b" x="69.71" y="31.9" width="6.78" height="7.52" />
+                            <rect class="b" x="47.9" y="39.41" width="14.3" height="7.52" />
+                            <rect class="b" x="33.6" y="39.41" width="14.3" height="7.52" />
+                            <rect class="a" x="62.2" y="50.97" width="14.29" height="7.52" transform="translate(138.69 109.46) rotate(180)" />
+                            <rect class="a" x="33.6" y="58.49" width="7.15" height="7.52" />
+                            <rect class="a" x="69.34" y="58.49" width="7.15" height="7.52" />
+                            <line class="a" x1="62.38" y1="24.81" x2="62.38" y2="19.11" />
+                            <line class="a" x1="55.14" y1="24.81" x2="55.14" y2="19.11" />
+                            <line class="a" x1="47.9" y1="29.54" x2="47.9" y2="23.84" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="h3 mb-2 text-normal">Implementation</h3>
+                        <p class="text-gray-dark">Our specialists will help with setup, assess authentication and evaluate security needs.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12 col-md-6 mb-3">
+                <a href="customized-training" class="card hover-card p-4 d-flex flex-items-center" data-ga-click="Offering, click, Customized Training">
+                    <div class="offering-icon mr-4 d-none d-sm-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.95 97.09">
+                            <defs>
+                                <style>
+                                    .a,
+                                    .b {
+                                        fill: none;
+                                        stroke-linecap: round;
+                                        stroke-linejoin: round;
+                                        stroke-width: 2px;
+                                    }
+
+                                    .a {
+                                        stroke: #2088ff;
+                                    }
+
+                                    .b {
+                                        stroke: #79b8ff;
+                                    }
+                                </style>
+                            </defs>
+                            <title>icon</title>
+                            <path class="a" d="M79,1H31a6,6,0,0,0-5.2,3L1.8,45.55a6,6,0,0,0,0,6l24,41.55a6,6,0,0,0,5.2,3H79a6,6,0,0,0,5.2-3l24-41.55a6,6,0,0,0,0-6L84.16,4A6,6,0,0,0,79,1Z"
+                            />
+                            <line class="b" x1="28.85" y1="33.59" x2="28.85" y2="42.36" />
+                            <line class="b" x1="28.85" y1="57.98" x2="28.85" y2="65.76" />
+                            <line class="b" x1="42.03" y1="36.6" x2="42.03" y2="33.62" />
+                            <line class="a" x1="45.64" y1="23.18" x2="45.64" y2="20.19" />
+                            <circle class="a" cx="28.85" cy="50.56" r="2.81" />
+                            <line class="a" x1="25.96" y1="50.56" x2="23.57" y2="50.56" />
+                            <line class="a" x1="34.06" y1="50.56" x2="31.67" y2="50.56" />
+                            <circle class="a" cx="55.2" cy="55.33" r="2.81" />
+                            <line class="a" x1="52.31" y1="55.33" x2="49.92" y2="55.33" />
+                            <line class="a" x1="60.41" y1="55.33" x2="58.01" y2="55.33" />
+                            <circle class="a" cx="41.99" cy="44.11" r="2.81" />
+                            <line class="a" x1="44.88" y1="44.11" x2="47.27" y2="44.11" />
+                            <line class="a" x1="36.78" y1="44.11" x2="39.17" y2="44.11" />
+                            <line class="b" x1="55.16" y1="62.3" x2="55.16" y2="65.76" />
+                            <line class="b" x1="42.05" y1="65.79" x2="42.05" y2="51.47" />
+                            <line class="b" x1="55.16" y1="33.59" x2="55.16" y2="48.42" />
+                            <circle class="a" cx="79.51" cy="58.9" r="6.87" />
+                            <circle class="a" cx="79.51" cy="40.16" r="6.87" />
+                            <line class="a" x1="79.91" y1="40.16" x2="75.11" y2="44.96" />
+                            <line class="a" x1="79.12" y1="58.9" x2="84.16" y2="53.85" />
+                            <rect class="a" x="35.4" y="19.18" width="39.6" height="5.01" />
+                            <line class="a" x1="35.4" y1="74.3" x2="35.4" y2="78.28" />
+                            <line class="a" x1="75" y1="74.3" x2="75" y2="78.28" />
+                            <line class="a" x1="35.75" y1="76.29" x2="74.5" y2="76.29" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="h3 mb-2 text-normal">Customized Training</h3>
+                        <p class="text-gray-dark">Learn to leverage the Git and GitHub ecosystem, using best practices for collaborating on code.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12 col-md-6 mb-3">
+                <a href="admin-mentoring" class="card hover-card p-4 d-flex flex-items-center" data-ga-click="Offering, click, Admin Mentoring">
+                    <div class="offering-icon mr-4 d-none d-sm-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.95 97.09">
+                            <defs>
+                                <style>
+                                    .a,
+                                    .b {
+                                        fill: none;
+                                        stroke-linecap: round;
+                                        stroke-linejoin: round;
+                                        stroke-width: 2px;
+                                    }
+
+                                    .a {
+                                        stroke: #2088ff;
+                                    }
+
+                                    .b {
+                                        stroke: #79b8ff;
+                                    }
+                                </style>
+                            </defs>
+                            <title>icon</title>
+                            <line class="a" x1="54.99" y1="16.27" x2="54.99" y2="20.35" />
+                            <line class="a" x1="65.28" y1="18.49" x2="63.13" y2="21.35" />
+                            <line class="a" x1="44.69" y1="18.49" x2="46.85" y2="21.35" />
+                            <path class="a" d="M79,1h-48a6,6,0,0,0-5.2,3l-24,41.55a6,6,0,0,0,0,6l24,41.55a6,6,0,0,0,5.2,3H79a6,6,0,0,0,5.2-3l24-41.55a6,6,0,0,0,0-6L84.23,4A6,6,0,0,0,79,1Z"
+                            />
+                            <path class="a" d="M56.24,49.85c-2.91-5.16-6.93-3-6.93-3a45.57,45.57,0,0,1,3.62,11.61c1.26,6.06,4.9,9.21,10,9.05l6.61,8.22"
+                            />
+                            <path class="a" d="M56.26,55.23l-.07-17.9c0-4.82,5.67-5,5.67-5l0,13.94" />
+                            <path class="a" d="M61.92,48.23l-.06-16.17c0-4.51,5.67-4.81,5.67-4.81l0,9.36" />
+                            <path class="a" d="M67.61,48.21l0-12.45c0-3.47,2.31-5.49,5.67-5.51l.07,19" />
+                            <path class="b" d="M42.8,75.75l5-7.16a13.6,13.6,0,0,0,2.31-.66" />
+                            <path class="b" d="M41,67.54c-5.95-.24-9.4-6.37-9.4-12.26a40.13,40.13,0,0,0-2-10.24s3.5-2.19,6.78,4.25c1.19,2.35,1.11,7.28,1.11,7.28a9.92,9.92,0,0,1,4,2.65"
+                            />
+                            <path class="b" d="M52,31.63a7.59,7.59,0,0,0-4.12-1.47l0,12" />
+                            <path class="b" d="M47.87,32.06c0-4.51-5.67-4.81-5.67-4.81l0,11.56" />
+                            <path class="b" d="M42.12,48.07l0-10.22c0-3.47-2.31-5.49-5.67-5.51l-.07,17" />
+                            <line class="b" x1="30.65" y1="72.79" x2="35.91" y2="65.94" />
+                            <path class="a" d="M79.52,72,75,66S79,63.57,79,57C79,52.38,79,36.72,79,36.72a5.69,5.69,0,0,0-5.67,5.38" />
+                            <rect class="a" x="53.17" y="76.65" width="3.63" height="3.63" transform="translate(-39.37 61.86) rotate(-45)" />
+                            <rect class="a" x="20.26" y="36.09" width="3.63" height="3.63" transform="translate(-20.34 26.72) rotate(-45)" />
+                            <rect class="a" x="84.89" y="36.09" width="3.63" height="3.63" transform="translate(121.21 126.02) rotate(-135)" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="h3 mb-2 text-normal">Admin Mentoring</h3>
+                        <p class="text-gray-dark">We’ll share best practices and pro tips to help your administrators.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12 col-md-6 mb-3">
+                <a href="api-consultation" class="card hover-card p-4 d-flex flex-items-center" data-ga-click="Offering, click, API Consultation">
+                    <div class="offering-icon mr-4 d-none d-sm-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.95 97.09">
+                            <defs>
+                                <style>
+                                    .a,
+                                    .b,
+                                    .c,
+                                    .e {
+                                        fill: none;
+                                        stroke-linecap: round;
+                                        stroke-width: 2px;
+                                    }
+
+                                    .a,
+                                    .c {
+                                        stroke: #2088ff;
+                                    }
+
+                                    .a,
+                                    .e {
+                                        stroke-linejoin: round;
+                                    }
+
+                                    .b,
+                                    .e {
+                                        stroke: #79b8ff;
+                                    }
+
+                                    .b,
+                                    .c {
+                                        stroke-miterlimit: 10;
+                                    }
+
+                                    .d {
+                                        opacity: 0.1;
+                                    }
+                                </style>
+                            </defs>
+                            <title>icon</title>
+                            <path class="a" d="M79,1h-48a6,6,0,0,0-5.2,3l-24,41.55a6,6,0,0,0,0,6l24,41.55a6,6,0,0,0,5.2,3H79a6,6,0,0,0,5.2-3l24-41.55a6,6,0,0,0,0-6L84.23,4A6,6,0,0,0,79,1Z"
+                            />
+                            <line class="b" x1="41" y1="33.91" x2="24.34" y2="33.91" />
+                            <line class="b" x1="43.89" y1="27.83" x2="33.52" y2="27.83" />
+                            <line class="c" x1="82.36" y1="68.04" x2="68.35" y2="68.04" />
+                            <line class="c" x1="77.07" y1="61.96" x2="71" y2="61.96" />
+                            <circle class="a" cx="47.84" cy="55.45" r="7.23" transform="translate(-25.19 50.07) rotate(-45)" />
+                            <path class="a" d="M60.39,48.54l1.19,3,5.24,1.73,0,4.31-5.22,1.84-1.27,3,2.5,4.92-3.07,3-5-2.39-3,1.22L50,74.42l-4.31,0-1.84-5.22-3-1.24-5,2.47-3-3.07,2.39-5-1.22-3-5.21-1.76,0-4.31,5.22-1.84,1.27-3-2.5-4.92,3.07-3,5,2.39,3-1.22,1.76-5.21,4.31,0,1.84,5.22,3,1.24,5-2.47,3,3.07Z"
+                            />
+                            <g class="d">
+                                <path class="a" d="M34.35,42.09l1.59-1.58,5,2.39,3-1.22,1.76-5.21,4.31,0,1.84,5.22,3,1.24,5-2.47,3,3.07-2.39,5,1.19,3,5.24,1.73,0,4.31-5.22,1.84-1.27,3,2.5,4.92-1.61,1.6"
+                                />
+                            </g>
+                            <path class="e" d="M60.83,34.7a5.34,5.34,0,1,1,7.55,7.55" />
+                            <path class="e" d="M54.52,32.84l-2-4L55,26.4l4,1.93,2.4-1,1.42-4.21h3.49l1.49,4.22,2.4,1,4-2,2.46,2.48-1.93,4,1,2.43L80,36.72v3.49l-4.22,1.49-1,2.42,2,4-2.48,2.46-4-1.93"
+                            />
+                            <g class="d">
+                                <path class="e" d="M53.7,27.67,55,26.4l4,1.93,2.4-1,1.42-4.21h3.49l1.49,4.22,2.4,1,4-2,2.46,2.48-1.93,4,1,2.43L80,36.72v3.49l-4.22,1.49-1,2.42,2,4-1.31,1.3"
+                                />
+                            </g>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="h3 mb-2 text-normal">API Consultation</h3>
+                        <p class="text-gray-dark">Use the GitHub API to supercharge your workflows, tooling, and infrastructure.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12 col-md-6 mb-3">
+                <a href="train-the-trainer" class="card hover-card p-4 d-flex flex-items-center" data-ga-click="Offering, click, Train-the-Trainer">
+                    <div class="offering-icon mr-4 d-none d-sm-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.95 97.09">
+                            <defs>
+                                <style>
+                                    .a,
+                                    .b {
+                                        fill: none;
+                                        stroke-linecap: round;
+                                        stroke-linejoin: round;
+                                        stroke-width: 2px;
+                                    }
+
+                                    .a {
+                                        stroke: #2088ff;
+                                    }
+
+                                    .b {
+                                        stroke: #79b8ff;
+                                    }
+                                </style>
+                            </defs>
+                            <title>icon</title>
+                            <rect class="a" x="55.27" y="43.52" width="17.3" height="4.66" />
+                            <path class="a" d="M79,1H31a6,6,0,0,0-5.2,3L1.8,45.55a6,6,0,0,0,0,6l24,41.55a6,6,0,0,0,5.2,3H79a6,6,0,0,0,5.2-3l24-41.55a6,6,0,0,0,0-6L84.16,4A6,6,0,0,0,79,1Z"
+                            />
+                            <path class="a" d="M69.64,42.57a5.77,5.77,0,0,0-11.44.08" />
+                            <circle class="a" cx="63.92" cy="33.5" r="4.12" />
+                            <path class="b" d="M66.28,65.78a4.56,4.56,0,0,0-9,.06" />
+                            <circle class="b" cx="61.76" cy="58.61" r="3.25" />
+                            <path class="b" d="M52.69,65.78a4.56,4.56,0,0,0-9,.06" />
+                            <circle class="b" cx="48.17" cy="58.61" r="3.25" />
+                            <path class="b" d="M80,65.78a4.56,4.56,0,0,0-9,.06" />
+                            <circle class="b" cx="75.45" cy="58.61" r="3.25" />
+                            <path class="b" d="M39,65.78a4.56,4.56,0,0,0-9,.06" />
+                            <circle class="b" cx="34.48" cy="58.61" r="3.25" />
+                            <polyline class="a" points="37.89 24.87 39.79 26.82 37.89 28.76" />
+                            <line class="a" x1="43.75" y1="28.58" x2="46.65" y2="28.58" />
+                            <polyline class="a" points="78.19 43.52 78.19 18.87 32.01 18.87 32.01 43.52 49.15 43.52" />
+                            <path class="a" d="M59.49,80.83a4.56,4.56,0,0,0-9,.06" />
+                            <circle class="a" cx="54.97" cy="73.66" r="3.25" />
+                            <path class="a" d="M45.9,80.83a4.56,4.56,0,0,0-9,.06" />
+                            <circle class="a" cx="41.38" cy="73.66" r="3.25" />
+                            <path class="a" d="M73.08,80.83a4.56,4.56,0,0,0-9,.06" />
+                            <circle class="a" cx="68.56" cy="73.66" r="3.25" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="h3 mb-2 text-normal">Train-the-Trainer</h3>
+                        <p class="text-gray-dark">We'll empower your team with the practical knowledge to deliver GitHub training among your business.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-12 col-md-6 mb-3">
+                <a href="innersource" class="card hover-card p-4 d-flex flex-items-center" data-ga-click="Offering, click, InnerSource">
+                    <div class="offering-icon mr-4 d-none d-sm-block">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.95 97.09">
+                            <defs>
+                                <style>
+                                    .a,
+                                    .b {
+                                        fill: none;
+                                        stroke-linecap: round;
+                                        stroke-linejoin: round;
+                                        stroke-width: 2px;
+                                    }
+
+                                    .a {
+                                        stroke: #2088ff;
+                                    }
+
+                                    .b {
+                                        stroke: #79b8ff;
+                                    }
+                                </style>
+                            </defs>
+                            <title>icon</title>
+                            <path class="a" d="M79,1H31a6,6,0,0,0-5.2,3L1.8,45.55a6,6,0,0,0,0,6l24,41.55a6,6,0,0,0,5.2,3H79a6,6,0,0,0,5.2-3l24-41.55a6,6,0,0,0,0-6L84.16,4A6,6,0,0,0,79,1Z"
+                            />
+                            <path class="a" d="M40.92,70.28a4.56,4.56,0,0,0-9,.06" />
+                            <circle class="a" cx="36.4" cy="63.11" r="3.25" />
+                            <path class="a" d="M77.92,70.28a4.56,4.56,0,0,0-9,.06" />
+                            <circle class="a" cx="73.4" cy="63.11" r="3.25" />
+                            <polyline class="a" points="25.83 70.46 25.83 45.9 42.16 45.9" />
+                            <polyline class="a" points="25.83 46.18 25.83 40.57 42.16 40.57" />
+                            <polyline class="a" points="42.2 31.78 42.2 25.71 67.56 25.76 67.56 31.09" />
+                            <polyline class="a" points="83.97 70.46 83.97 45.9 67.82 45.9" />
+                            <polyline class="a" points="83.97 46.18 83.97 40.57 67.82 40.57" />
+                            <line class="b" x1="32.15" y1="52.72" x2="35.96" y2="52.72" />
+                            <polyline class="a" points="42.2 54.69 42.2 31.09 67.56 31.09 67.56 54.38" />
+                            <line class="b" x1="48.47" y1="43.83" x2="52.27" y2="43.83" />
+                            <line class="b" x1="48.47" y1="49.18" x2="52.27" y2="49.18" />
+                            <line class="b" x1="73.9" y1="52.6" x2="77.7" y2="52.6" />
+                            <line class="b" x1="57.53" y1="43.83" x2="61.33" y2="43.83" />
+                            <line class="b" x1="57.53" y1="49.18" x2="61.33" y2="49.18" />
+                            <line class="b" x1="48.47" y1="54.54" x2="52.27" y2="54.54" />
+                            <line class="b" x1="57.53" y1="54.54" x2="61.33" y2="54.54" />
+                            <line class="b" x1="48.47" y1="38.48" x2="52.27" y2="38.48" />
+                            <line class="b" x1="57.53" y1="38.48" x2="61.33" y2="38.48" />
+                            <rect class="a" x="47.99" y="60.65" width="13.82" height="9.8" />
+                            <line class="a" x1="45.82" y1="70.47" x2="63.76" y2="70.47" />
+                            <polyline class="a" points="51.51 64.05 53.03 65.55 51.51 67.05" />
+                            <line class="a" x1="55.97" y1="66.89" x2="58.29" y2="66.89" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="h3 mb-2 text-normal">InnerSource</h3>
+                        <p class="text-gray-dark">Use the foundations of open source development to increase collaboration and reduce duplicate efforts
+                            inside your business.</p>
+                    </div>
+                </a>
+            </div>
