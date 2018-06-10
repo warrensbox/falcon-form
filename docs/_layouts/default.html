@@ -96,8 +96,8 @@
             <div class="site-header-menu clearfix">
                 <nav class="site-header-nav float-left">
                     <a href="/#offerings" class="js-anchor nav-item" data-ga-click="Header, click, Nav menu - item:offerings">Usage</a>
-                    <a href="/#upcoming-events" class="js-anchor nav-item" data-ga-click="Header, click, Nav menu - item:events">See example</a>
-                    <a href="/#contact" class="js-anchor nav-item" data-ga-click="Header, click, Nav menu - item:contact">Contact</a>
+                    <a href="/#upcoming-events" class="js-anchor nav-item" data-ga-click="Header, click, Nav menu - item:events">See Examples</a>
+                    <a href="/#contact" class="js-anchor nav-item" data-ga-click="Header, click, Nav menu - item:contact">Test it out</a>
                 </nav>
             </div>
         </div>
@@ -106,7 +106,7 @@
         <div class="container-lg p-responsive">
             <h1 class="alt-h1 lh-condensed mb-3">Contact form made simple</h1>
 
-            <p class="alt-lead mb-3 pb-1 col-md-8 mx-auto">Simply send your contact form to our URL and we'll forward the content to your email.</p>
+            <p class="alt-lead mb-3 pb-1 col-md-8 mx-auto">Simply send your contact form to our URL and we'll forward the information to your email.</p>
 
             <div class="tabs">
 
@@ -157,7 +157,7 @@
                         <div class="col-md-8 mx-auto">
                             <pre>          
                               <code class="language-markup">   
-    &lt;form action=&quot;https://du0la9spjb.execute-api.us-east-1.amazonaws.com/prod/your@email.com&quot; method=&quot;POST&quot;&gt;
+    &lt;form action=&quot;https://falcon.warrensbox.com/your@email.com&quot; method=&quot;POST&quot;&gt;
         &lt;input type=&quot;text&quot; name=&quot;contact_name&quot;&gt;
         &lt;input type=&quot;email&quot; name=&quot;contact_email&quot;&gt;
         &lt;textarea name=&quot;message_content&quot; rows=&quot;3&quot;&gt;&lt;/textarea&gt;
@@ -173,7 +173,7 @@
                             <pre style="height: 220px;">          
                                   <code class="language-javascript">   
     var $form = $('form#form-id'),
-    url = 'https://du0la9spjb.execute-api.us-east-1.amazonaws.com/prod/falcon-form'
+    url = 'https://falcon.warrensbox.com/form'
 
     $('#submit-form').on('click', function (e) {
         e.preventDefault();
@@ -202,7 +202,7 @@
         function getData() {
             var formData = new FormData(form);
             var XHR = new XMLHttpRequest();
-            var url = 'https://du0la9spjb.execute-api.us-east-1.amazonaws.com/prod/falcon-form'
+            var url = 'https://falcon.warrensbox.com/form'
             var obj = {}
 
             for (var data of formData.entries()) {
@@ -252,7 +252,7 @@
                     <a href="#offerings" class="js-anchor btn btn-large btn-blue btn-block f3 mx-auto" data-ga-click="Hero, click, offerings-button">How to use</a>
                 </div>
                 <div class="col-sm-6 pl-sm-2 pl-md-3 pr-md-5">
-                    <a href="#contact" class="js-anchor btn btn-large btn-block btn-primary f3 mx-auto" data-ga-click="Hero, click, contact-button">See example</a>
+                    <a href="#contact" class="js-anchor btn btn-large btn-block btn-primary f3 mx-auto" data-ga-click="Hero, click, contact-button">Test it out</a>
                 </div>
             </div>
         </div>
@@ -266,14 +266,14 @@
 
     <div class="featurette container-lg p-responsive" id="offerings">
         <h2 class="alt-h2 mb-2 lh-condensed text-center">Usage</h2>
-        <p class="lead text-center mb-2 mb-md-6 pb-md-4 col-md-8 mx-auto">. The goal is to make it as simple as possible. Below, we will demostrate how you can use the Falcon Form endpoint
-            to inetgrate with your contact form:
+        <p class="lead text-center mb-2 mb-md-6 pb-md-4 col-md-8 mx-auto">. Send your contact form information to our url, and we will forward you that information via email. 
+            We will guide you on how you can integrate Falcon Form with your contact form:
         </p>
 
         <div class="d-sm-flex gutter-md-condensed flex-wrap flex-items-center mt-6 f5">
 
             <div class="col-12 col-md-12 mb-3">
-                <a class="card hover-card p-4 d-flex flex-items-center" data-ga-click="Offering, click, Workflow Consultation">
+                <a class="card hover-card p-4 d-flex" data-ga-click="Offering, click, Workflow Consultation">
                     <div class="offering-icon mr-4 d-none d-sm-block">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.95 97.09">
                             <defs>
@@ -324,12 +324,12 @@
                     </div>
                     <div class="col-12 col-md-12 col-sm-12">
                         <h3 class="h3 mb-2 text-normal">Pure HTML example</h3>
-                        <p class="text-gray-dark">We’ll guide you in establishing collaboration patterns and branching strategies.</p>
+                        <p class="text-gray-dark">If you want to keep things simple by only using HTML to forward your form content, follow the example below:</p>
 
                         <div class="col-12 col-md-8">
                             <pre>          
                                   <code class="language-markup">   
-    &lt;form action=&quot;https://du0la9spjb.execute-api.us-east-1.amazonaws.com/prod/your@email.com&quot; method=&quot;POST&quot;&gt;
+    &lt;form action=&quot;https://falcon.warrensbox.com/your@email.com&quot; method=&quot;POST&quot;&gt;
         &lt;input type=&quot;text&quot; name=&quot;contact_name&quot;&gt;
         &lt;input type=&quot;email&quot; name=&quot;contact_email&quot;&gt;
         &lt;textarea name=&quot;message_content&quot; rows=&quot;3&quot;&gt;&lt;/textarea&gt;
@@ -344,7 +344,7 @@
             </div>
 
             <div class="col-12 col-md-12 mb-3">
-                <a class="card hover-card p-4 d-flex flex-items-center" data-ga-click="Offering, click, Migration">
+                <a class="card hover-card p-4 d-flex" data-ga-click="Offering, click, Migration">
                     <div class="offering-icon mr-4 d-none d-sm-block">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.95 97.09">
                             <defs>
@@ -400,10 +400,10 @@
                     </div>
                     <div class="col-12 col-md-12 col-sm-12">
                         <h3 class="h3 mb-2 text-normal">HTML + JQuery Example</h3>
-                        <p class="text-gray-dark">We can help you assess your current workflow and determine what and how to migrate.</p>
+                        <p class="text-gray-dark">If you would like to use JQuery and HTML for further customization, use this example below:</p>
 
                         <h4 class="h4 mb-2 text-normal">Step 1 : HTML</h4>
-                        <p class="text-gray-dark">Our specialists will help with setup, assess authentication and evaluate security needs.</p>
+                        <p class="text-gray-dark">Add this HTML code snippet to your source code, feel free to beautify it with some css.</p>
 
                         <div class="col-12 col-md-8">
                             <pre>          
@@ -419,12 +419,12 @@
                         </div>
 
                         <h4 class="h4 mb-2 text-normal">Step 2 : Add Jquery</h4>
-                        <p class="text-gray-dark">Our specialists will help with setup, assess authentication and evaluate security needs.</p>
+                        <p class="text-gray-dark">Finally, add this code snippet in a &lt;script&gt;&lt;/script&gt; tag or in a seperate JavaScript file.</p>
                         <div class="col-12 col-md-8">
                             <pre>          
                                 <code class="language-javascript">   
     var $form = $('form#form-id'),
-    url = 'https://du0la9spjb.execute-api.us-east-1.amazonaws.com/prod/falcon-form'
+    url = 'https://falcon.warrensbox.com/form'
 
     $('#submit-form').on('click', function (e) {
         e.preventDefault();
@@ -448,7 +448,7 @@
                 </a>
             </div>
             <div class="col-12 col-md-12 mb-3">
-                <a class="card hover-card p-4 d-flex flex-items-center" data-ga-click="Offering, click, Implementation">
+                <a class="card hover-card p-4 d-flex" data-ga-click="Offering, click, Implementation">
                     <div class="offering-icon mr-4 d-none d-sm-block">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.95 97.09">
                             <defs>
@@ -493,10 +493,10 @@
                     </div>
                     <div class="col-12 col-md-12 col-sm-12">
                         <h3 class="h3 mb-2 text-normal">HTML + JavaScript</h3>
-                        <p class="text-gray-dark">Our specialists will help with setup, assess authentication and evaluate security needs.</p>
+                        <p class="text-gray-dark">You also have the option to use pure JavaScript without JQuery to integrate Falcon Form:</p>
 
                         <h4 class="h4 mb-2 text-normal">Step 1 : HTML</h4>
-                        <p class="text-gray-dark">Our specialists will help with setup, assess authentication and evaluate security needs.</p>
+                        <p class="text-gray-dark">Add this HTML code snippet to your source code, feel free to beautify it with some fancy css.</p>
 
                         <div class="col-12 col-md-8 col-sm-12">
                             <pre>          
@@ -513,7 +513,7 @@
 
 
                         <h4 class="h4 mb-2 text-normal">Step 2 : Add Javascript</h4>
-                        <p class="text-gray-dark">Our specialists will help with setup, assess authentication and evaluate security needs.</p>
+                        <p class="text-gray-dark">Add this code snippet in a &lt;script&gt;&lt;/script&gt; tag or in a seperate JavaScript file.</p>
                         <div class="col-12 col-md-8">
                             <pre>          
                                 <code class="language-javascript">   
@@ -521,7 +521,7 @@
         function getData() {
             var formData = new FormData(form);
             var XHR = new XMLHttpRequest();
-            var url = 'https://du0la9spjb.execute-api.us-east-1.amazonaws.com/prod/falcon-form'
+            var url = 'https://falcon.warrensbox.com/form'
             var obj = {}
 
             for (var data of formData.entries()) {
@@ -608,15 +608,16 @@
                 </svg>
             </div>
             <h2 class="alt-h2 mb-2 lh-condensed">Configuration</h2>
-            <p class="lead text-center mb-2 col-md-8 mx-auto pb-4">Our Services Account Engineers are experienced engineers and administrators dedicated to helping your tech&nbsp;stack.</p>
+            <p class="lead text-center mb-2 col-md-8 mx-auto pb-4">You are able to further configure your contact form to forward more form content to your email. 
+                More configurable options will be added in the near future.</p>
             <div class="d-table col-12">
                 <div class="col-4 d-table-cell border p-2">
-                    <h4 style="color: #2088ff">Required</h4>
+                    <h4 class="text-red">Required</h4>
                     <p class="text-gray">All configuration requires an "owner_email" attribute</p>
                     <hr>
                     <h5>Pure HTML</h5>
                     <code>
-                        &lt;input type=&quot;text&quot; name=&quot;contact_name&quot;&gt;
+                        &lt;form action=&quot;https://falcon.warrensbox.com/your@email.com&quot; method=&quot;POST&quot;&gt;
                     </code>
                     <hr>
                     <h5>JQuery</h5>
@@ -630,7 +631,7 @@
                     </code>
                 </div>
                 <div class="col-4 d-table-cell border p-2">
-                    <h4 style="color: #2088ff">Required</h4>
+                    <h4 class="text-green">Optional</h4>
                     <p class="text-gray">The follow are optional attributes</p>
                     <hr>
                     <code>
@@ -646,10 +647,7 @@
     <div class="featurette p-responsive" id="upcoming-events">
         <div class="container-lg">
             <h2 class="alt-h2 mb-1 text-center">Sample Use Cases</h2>
-            <p class="lead text-center mb-2 col-md-8 mx-auto">Meet the GitHub Professional Services Team in public training sessions, monthly webcasts, and at conferences.
-                You can also start learning today with
-                <a href="https://lab.github.com">GitHub Learning Lab</a>, or
-                <a href="https://resources.github.com/webcasts/">our past webcasts</a>.</p>
+            <p class="lead text-center mb-2 col-md-8 mx-auto">Checkout companies and other individual that are using Form Falcon to forward their contact forms.</p>
 
             <div class="event-cards">
 
@@ -762,7 +760,8 @@
     <div class="featurette" id="contact">
         <div class="container-lg p-responsive">
             <h2 class="alt-h2 text-center">Test it out with your email!</h2>
-            <p class="lead text-center col-md-8 col-lg-7 mx-auto">How can we help you? Let's build a customized solution that meets all of your&nbsp;needs.</p>
+            <p class="lead text-center col-md-8 col-lg-7 mx-auto">Try Falcon Form with your email below. 
+                Send a message to yourself and verify to it arrives in yor inbox as expected.</p>
         </div>
 
         <div class="container" style="margin-top: -20px;">
@@ -783,7 +782,7 @@
                         <div>
                             <div class="stuff">
                                 <code class="code-test  ">   
-&lt;<span class="frmple">form</span> <span class="progreen">action</span>=&quot;<span class="valblue">https://du0la9spjb.execute-api.us-east-1.amazonaws.com/prod/<span id="nameDisplay"></span></span>&quot; <span class="progreen">method</span>=&quot;<span class="valblue">POST</span>&quot;&gt;
+&lt;<span class="frmple">form</span> <span class="progreen">action</span>=&quot;<span class="valblue">https://falcon.warrensbox.com/<span id="nameDisplay"></span></span>&quot; <span class="progreen">method</span>=&quot;<span class="valblue">POST</span>&quot;&gt;
     &lt;<span class="frmple">input</span> <span class="progreen">type</span>=&quot;<span class="progreen"></span><span class="valblue">text</span>&quot; <span class="progreen">name</span>=&quot;<span class="valblue">contact_name</span>&quot;&gt;
     &lt;<span class="frmple">input</span> <span class="progreen">type</span>=&quot;<span class="valblue">email</span>&quot; <span class="progreen">name</span>=&quot;<span class="valblue">contact_email</span>&quot;&gt;
     &lt;<span class="frmple">textarea</span> <span class="progreen">name</span>=&quot;<span class="valblue">message_content</span>&quot; <span class="progreen">rows</span>=&quot;<span class="valblue">3</span>&quot;&gt;&lt;<span class="frmple">/textarea</span>&gt;
@@ -837,36 +836,36 @@
     <div class="featurette" id="contacta">
         <div class="container-lg p-responsive">
             <h2 class="alt-h2 text-center">Questions?</h2>
-            <p class="lead text-center col-md-8 col-lg-7 mx-auto">How can we help you? Let's build a customized solution that meets all of your&nbsp;needs.</p>
+            <p class="lead text-center col-md-8 col-lg-7 mx-auto">How does this work? Let us try to answer some of your questions.</p>
         </div>
 
         <div class="container" style="margin-top: -20px;">
             <div class="d-sm-flex gutter-md-condensed flex-wrap flex-items-center mt-1 f5">
                 <div class="col-12  col-md-6 mt-4">
                     <div class="card hover-card p-4 flex-items-center" data-ga-click="Offering, click, Workflow Consultation">
-                        <h4 class="text-blue h4 mb-1 text-normal" style="display: block; font-weight: 300">How about my privacy</h4>
-                        <p class="text-gray-dark" style="display: block">We’ll guide you in establishing collaboration patterns and branching strategies.</p>
+                        <h4 class="text-blue h4 mb-1" style="display: block; font-weight: 400">How about my privacy?</h4>
+                        <p class="text-gray-dark" style="display: block">We do not store any information. All contact form contents are forwarded as it is.</p>
                     </div>
                 </div>
 
                 <div class="col-12  col-md-6 mt-4">
                     <div class="card hover-card p-4 flex-items-center" data-ga-click="Offering, click, Workflow Consultation">
-                        <h4 class="text-blue h4 mb-1 text-normal" style="display: block; font-weight: 300">How about my privacy</h4>
-                        <p class="text-gray-dark" style="display: block">We’ll guide you in establishing collaboration patterns and branching strategies.</p>
+                        <h4 class="text-blue h4 mb-1" style="display: block; font-weight: 400">How does this work?</h4>
+                        <p class="text-gray-dark" style="display: block">We use a serverless architecture. Form contents are send to AWS lambda and routed to AWS SES to forward your email.</p>
                     </div>
                 </div>
 
                 <div class="col-12  col-md-6 mt-4">
                     <div class="card hover-card p-4 flex-items-center" data-ga-click="Offering, click, Workflow Consultation">
-                        <h4 class="text-blue h4 mb-1 text-normal" style="display: block; font-weight: 300">How about my privacy</h4>
-                        <p class="text-gray-dark" style="display: block">We’ll guide you in establishing collaboration patterns and branching strategies.</p>
+                        <h4 class="text-blue h4 mb-1" style="display: block; font-weight: 400">Need more features?</h4>
+                        <p class="text-gray-dark" style="display: block">We’re working hard to add more features. Shoot us an email at <span class="text-blue">admin@keplersbox.com</span>  with your request.</p>
                     </div>
                 </div>
 
                 <div class="col-12  col-md-6 mt-4">
                         <div class="card hover-card p-4 flex-items-center" data-ga-click="Offering, click, Workflow Consultation">
-                            <h4 class="text-blue h4 mb-1 text-normal" style="display: block; font-weight: 300">How about my privacy</h4>
-                            <p class="text-gray-dark" style="display: block">We’ll guide you in establishing collaboration patterns and branching strategies.</p>
+                            <h4 class="text-blue h4 mb-1" style="display: block; font-weight: 300">What about this project?</h4>
+                            <p class="text-gray-dark" style="display: block">This is a free and opensource project hosted on github. Feel free to make a pull request and contribute to the project.</p>
                         </div>
                     </div>
             </div>
@@ -901,7 +900,7 @@
                     © 2018
                 </p>
             </div>
-            <div class="site-footer-marketing-col mb-3 pr-3">
+            <!-- <div class="site-footer-marketing-col mb-3 pr-3">
                 <h4 class="mb-2">Features</h4>
                 <ul class="list-style-none text-gray">
                     <li class="lh-condensed mb-2">
@@ -923,21 +922,27 @@
                         <a href="//github.com/features#code-hosting" class="muted-link alt-text-small">Code hosting</a>
                     </li>
                 </ul>
-            </div>
+            </div> -->
             <div class="site-footer-marketing-col mb-3 pr-3">
                 <h4 class="mb-2">Platform</h4>
                 <ul class="list-style-none">
                     <li class="lh-condensed mb-2">
-                        <a href="https://atom.io" class="muted-link alt-text-small">Atom</a>
+                        <a href="https://aws.amazon.com/lambda/"  target="_blank" class="muted-link alt-text-small">AWS Lambda</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="http://electron.atom.io/" class="muted-link alt-text-small">Electron</a>
+                        <a href="hhttps://aws.amazon.com/api-gateway/" target="_blank" class="muted-link alt-text-small">AWS API Gateway</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="https://desktop.github.com/" class="muted-link alt-text-small">GitHub Desktop</a>
+                        <a href="https://aws.amazon.com/ses/" target="_blank" class="muted-link alt-text-small">AWS SES</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="https://developer.github.com/" class="muted-link alt-text-small">Developers</a>
+                        <a href="https://circleci.com/product/" target="_blank" class="muted-link alt-text-small">Circle CI</a>
+                    </li>
+                    <li class="lh-condensed mb-2">
+                            <a href="https://travis-ci.org/" target="_blank" class="muted-link alt-text-small">Travis CI</a>
+                    </li>
+                    <li class="lh-condensed mb-2">
+                            <a href="https://github.com/" target="_blank" class="muted-link alt-text-small">GitHub</a>
                     </li>
                 </ul>
             </div>
@@ -945,23 +950,23 @@
                 <h4 class="mb-2">Community</h4>
                 <ul class="list-style-none">
                     <li class="lh-condensed mb-2">
-                        <a href="//github.com/personal" class="muted-link alt-text-small">Personal</a>
+                            <a href="https://github.com/warrensbox/falcon-form" target="_blank" class="muted-link alt-text-small">Open source</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="//github.com/open-source" class="muted-link alt-text-small">Open source</a>
+                        <a href="https://github.com/warrensbox/" target="_blank" class="muted-link alt-text-small">Personal</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="//github.com/business" class="muted-link alt-text-small">For Business</a>
+                        <a href="https://github.com/warrensbox/falcon-form/issues" target="_blank" class="muted-link alt-text-small">For Issues</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="https://education.github.com/" class="muted-link alt-text-small">For Education</a>
+                        <a href="https://github.com/warrensbox/falcon-form/projects" target="_blank"  class="muted-link alt-text-small">Project Page</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="https://community.github.com/" class="muted-link alt-text-small">Sponsorships</a>
+                        <a href="https://www.buymeacoffee.com/warrensbox" target="_blank" class="muted-link alt-text-small">Buy me a coffee</a>
                     </li>
                 </ul>
             </div>
-            <div class="site-footer-marketing-col mb-3 pr-3">
+            <!-- <div class="site-footer-marketing-col mb-3 pr-3">
                 <h4 class="mb-2">Company</h4>
                 <ul class="list-style-none">
                     <li class="lh-condensed mb-2">
@@ -983,30 +988,21 @@
                         <a href="https://shop.github.com" class="muted-link alt-text-small">Shop</a>
                     </li>
                 </ul>
-            </div>
+            </div> -->
             <div class="site-footer-marketing-col mb-3 pr-3">
-                <h4 class="mb-2">Resources</h4>
+                <h4 class="mb-2">Other Projects</h4>
                 <ul class="list-style-none">
                     <li class="lh-condensed mb-2">
-                        <a href="https://github.com/contact/" class="muted-link alt-text-small">Contact</a>
+                        <a href="https://warrensbox.github.io/terraform-switcher/" target="_blank"  class="muted-link alt-text-small">Tfswitch</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="https://help.github.com/" class="muted-link alt-text-small">Help</a>
+                        <a href="https://github.com/warrensbox/aws-find" target="_blank"  class="muted-link alt-text-small">Aws-find</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="https://status.github.com/" class="muted-link alt-text-small">Status</a>
+                        <a href="https://resumex.io"  target="_blank" class="muted-link alt-text-small">ResumeX</a>
                     </li>
                     <li class="lh-condensed mb-2">
-                        <a href="https://help.github.com/articles/github-terms-of-service/" class="muted-link alt-text-small">Terms</a>
-                    </li>
-                    <li class="lh-condensed mb-2">
-                        <a href="https://help.github.com/articles/github-privacy-statement/" class="muted-link alt-text-small">Privacy</a>
-                    </li>
-                    <li class="lh-condensed mb-2">
-                        <a href="https://github.com/security" class="muted-link alt-text-small">Security</a>
-                    </li>
-                    <li class="lh-condensed mb-2">
-                        <a href="https://lab.github.com" class="muted-link alt-text-small">Training</a>
+                        <a href="https://bittrove.org"  target="_blank" class="muted-link alt-text-small">BitTrove</a>
                     </li>
                 </ul>
             </div>
@@ -1031,8 +1027,6 @@
 
         //     submit.insertAdjacentHTML('beforebegin', out);
         // })();
-
-
     </script>
 
     <div class="g-recaptcha" data-sitekey="6LfpN0gUAAAAANaXI_h9p7HcNe1pp_jkUlwqG4w8" data-callback="onSubmit" data-size="invisible">

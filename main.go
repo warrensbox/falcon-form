@@ -52,7 +52,7 @@ type Message struct {
 
 //test comment
 const (
-	URLPARAM     = "/falcon-form"
+	URLPARAM     = "/form"
 	CONTACTEMAIL = "contact_email"
 	CONTACTPHONE = "contact_phone"
 	CONTACTNAME  = "contact_name"
@@ -123,14 +123,13 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			fmt.Printf("url sample %q \n", urlSample)
 			content, _ := url.ParseQuery(urlSample.RawQuery)
 
-			if len(content[CONTACTEMAIL]) < 0 {
-				return events.APIGatewayProxyResponse{Body: "Must provide email", StatusCode: 401}, nil
+			if len(content[CONTACTEMAIL]) > 0 {
+				fmt.Printf("Contact email %q \n", content[CONTACTEMAIL][0])
+				contactEmail = content[CONTACTEMAIL][0]
+			} else {
+				fmt.Printf("no phone")
+				contactEmail = ""
 			}
-			fmt.Printf("email %q \n", content[CONTACTEMAIL][0])
-			fmt.Printf("msg %q \n", content[MSGCONTENT][0])
-
-			contactEmail = content[CONTACTEMAIL][0]
-			msgContent = content[MSGCONTENT][0]
 
 			if len(content[CONTACTPHONE]) > 0 {
 				fmt.Printf("phone %q \n", content[CONTACTPHONE][0])

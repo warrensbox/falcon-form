@@ -2,7 +2,7 @@ window.addEventListener("load", function () {
     function getData() {
         var formData = new FormData(form);
         var XHR = new XMLHttpRequest();
-        var url = 'https://du0la9spjb.execute-api.us-east-1.amazonaws.com/prod/falcon-form'
+        var url = 'https://falcon.warrensbox.com/form'
         var obj = {}
 
         for (var data of formData.entries()) {
@@ -23,12 +23,12 @@ window.addEventListener("load", function () {
         obj["owner_email"] = owner_email
 
         XHR.addEventListener('load', function (event) {
-            alert('Yeah! Data sent and response loaded.');
+            alert('Message sent!\n Now, check your email to see the imformation you sent!\n');
         });
 
         // Define what happens in case of error
         XHR.addEventListener('error', function (event) {
-            alert('Message sent!\n Now, check your email to see the imformation you sent!\n');
+            //alert('Message sent!\n Now, check your email to see the imformation you sent!\n');
         });
         console.log(obj)
         XHR.open('POST', url);

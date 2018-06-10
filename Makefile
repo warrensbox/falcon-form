@@ -15,3 +15,6 @@ publish:
 	zip message-falcon.zip bin/*
 	aws s3 cp message-falcon.zip s3://message-falcon
 	aws lambda update-function-code --function-name message-falcon --s3-bucket message-falcon --s3-key message-falcon.zip
+
+upload:
+	aws s3 cp --recursive --acl public-read docs/_site s3://falcon-form.warrensbox.com/ 
