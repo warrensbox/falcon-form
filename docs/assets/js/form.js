@@ -24,6 +24,10 @@ window.addEventListener("load", function () {
 
         XHR.addEventListener('load', function (event) {
             alert('Message sent!\n Now, check your email to see the imformation you sent!\n');
+            document.getElementById('nameField').value  = ""
+            document.getElementById('contact_name').value  = ""
+            document.getElementById('contact_email').value  = ""
+            document.getElementById('message_content').value  = ""
         });
 
         // Define what happens in case of error
