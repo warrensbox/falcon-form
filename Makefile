@@ -18,5 +18,5 @@ publish:
 
 upload:
 	export BUNDLE_GEMFILE=${PWD}/docs/Gemfile
-	bundle exec jekyll build -c docs/_config.yml --source ${PWD}/docs --destination ${PWD}/docs/_site
+	JEKYLL_ENV=production bundle exec jekyll build -c docs/_config.yml --source ${PWD}/docs --destination ${PWD}/docs/_site
 	aws s3 cp --recursive --acl public-read docs/_site s3://falcon-form.warrensbox.com/ 
