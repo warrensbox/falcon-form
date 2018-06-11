@@ -15,7 +15,7 @@ jobs:
 
   release:
     docker:
-      - image: warrensbox/go-aws-ubuntu:0.1.0
+      - image: warrensbox/tatooine-box:latest
 
     steps:
       - checkout
