@@ -24,7 +24,7 @@ jobs:
             echo $GOROOT
             echo $GOPATH
             #make publishcircle
-            cd docs; bundle install --path vendor/bundler; JEKYLL_ENV=production bundle exec jekyll build -c _config.yml; cd ..
+            cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
             make upload
          
 workflows:
