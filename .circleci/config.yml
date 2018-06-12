@@ -15,7 +15,7 @@ jobs:
 
   release:
     docker:
-      - image: warrensbox/tatooine-box:latest
+      - image: warrensbox/tat
 
     steps:
       - checkout
@@ -23,6 +23,16 @@ jobs:
           command: |
             make publishcircle
             make upload
+         
+  # upload:
+  #   docker:
+  #     - image: warrensbox/tatooine-box:latest
+
+  #   steps:
+  #     - checkout
+  #     - run: 
+  #         command: |
+  #           make upload
 
 workflows:
   version: 2
@@ -37,4 +47,5 @@ workflows:
             branches:
               only: 
               - master
+
 
