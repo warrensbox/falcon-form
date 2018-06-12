@@ -23,7 +23,7 @@ jobs:
           command: |
             echo $GOROOT
             echo $GOPATH
-            #make publishcircle
+            make publishcircle
             cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
             make upload
          
