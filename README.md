@@ -111,7 +111,7 @@ window.addEventListener("load", function () {
 
 ### Optional 
  
- The follow are optional attributes   
+ The following are optional attributes   
  `<input type="text" name="contact_name">`   
 `<input type="text" name="contact_number"> `      
  `<textarea name="message_content" rows="3"></textarea>`    
