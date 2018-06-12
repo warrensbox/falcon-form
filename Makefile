@@ -17,7 +17,7 @@ publish:
 	aws lambda update-function-code --function-name message-falcon --s3-bucket message-falcon --s3-key message-falcon.zip
 
 upload:
-	bundle install --path vendor/bundle --gemfile ${BUNDLE_GEMFILE}
+	bundle install --path vendor/bundle --gemfile ${PWD}/docs/Gemfile
 	export BUNDLE_GEMFILE=${PWD}/docs/Gemfile
 	JEKYLL_ENV=production bundle exec jekyll build -c docs/_config.yml --source ${PWD}/docs --destination ${PWD}/docs/_site
 	aws s3 cp --recursive --acl public-read docs/_site s3://falcon-form.warrensbox.com/ 
