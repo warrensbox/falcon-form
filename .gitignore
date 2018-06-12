@@ -16,3 +16,6 @@ message-falcon.zip
 bin
 
 .sass-cache
+
+
+docs/vendor/**
