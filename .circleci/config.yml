@@ -15,14 +15,12 @@ jobs:
 
   release:
     docker:
-      - image: warrensbox/tat
+      - image: warrensbox/go-rb-py-aws
 
     steps:
       - checkout
       - run: 
           command: |
-            echo $GOROOT
-            echo $GOPATH
             make publishcircle
             cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
             make upload
