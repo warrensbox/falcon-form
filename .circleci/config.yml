@@ -24,16 +24,6 @@ jobs:
             make publishcircle
             make upload
          
-  # upload:
-  #   docker:
-  #     - image: warrensbox/tatooine-box:latest
-
-  #   steps:
-  #     - checkout
-  #     - run: 
-  #         command: |
-  #           make upload
-
 workflows:
   version: 2
 
