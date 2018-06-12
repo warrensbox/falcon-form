@@ -21,6 +21,7 @@ jobs:
       - checkout
       - run: 
           command: |
+            echo $GOROOT
             echo $GOPATH
             make publishcircle
             make upload
