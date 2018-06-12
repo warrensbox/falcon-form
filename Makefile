@@ -18,6 +18,7 @@ publish:
 
 upload:
 	export BUNDLE_PATH=${PWD}/docs
+	export GEM_HOME=${PWD}/docs
 	bundle install --gemfile ${PWD}/docs/Gemfile
 	export BUNDLE_GEMFILE=${PWD}/docs/Gemfile
 	JEKYLL_ENV=production bundle exec jekyll build -c docs/_config.yml --source ${PWD}/docs --destination ${PWD}/docs/_site
