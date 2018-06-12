@@ -7,7 +7,7 @@ jobs:
     docker:
       - image: circleci/golang:1.10
 
-    working_directory: /go/src/github.com/warrensbox/terraform-switcher
+    working_directory: /go/src/github.com/warrensbox/falcon-form
 
     steps:
       - checkout
@@ -24,6 +24,7 @@ jobs:
             echo $GOROOT
             echo $GOPATH
             make publishcircle
+            cd /docs; bundle install --path vendor/bundler; JEKYLL_ENV=production bundle exec jekyll build -c _config.yml; cd ..
             make upload
          
 workflows:
