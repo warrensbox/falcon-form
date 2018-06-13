@@ -19,8 +19,8 @@
     <meta name="generator" content="Jekyll v3.7.3" />
     <meta property="og:title" content="Falcon Form | Contact Form Made Simple"/>
     <meta property="og:locale" content="en_US" />
-    <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
-    <meta property="og:description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description." />
+    <meta name="description" content="Simply send your contact form to our URL and we'll forward the information to your email." />
+    <meta property="og:description" content="Simply send your contact form to our URL and we'll forward the information to your email." />
     <link rel="canonical" href="http://falcon-form.warrensbox.com/" />
     <meta property="og:url" content="http://falcon-form.warrensbox.com/" />
     <meta property="og:site_name" content="Falcon Form" />
@@ -608,14 +608,15 @@
             <h2 class="alt-h2 mb-2 lh-condensed">Configuration</h2>
             <p class="lead text-center mb-2 col-md-8 mx-auto pb-4">You are able to customize your form to forward more information to your email. 
                 More customization options will be available in the future.</p>
-            <div class="d-table col-12">
-                <div class="col-4 d-table-cell border p-2">
+            <div class="d-flex flex-column flex-md-row d-table col-12">
+                <div class="col-12 d-flex flex-column d-table-cell border p-2">
                     <h4 class="text-red">Required</h4>
                     <p class="text-gray">All configuration requires an "owner_email" attribute</p>
                     <hr>
                     <h5>Pure HTML</h5>
-                    <code>
-                        &lt;form action=&quot;https://falcon.warrensbox.com/your@email.com&quot; method=&quot;POST&quot;&gt;
+                    <code style="overflow-x: auto;">
+                        &lt;form action=&quot;https://falcon.warrensbox.com/your@email.com&quot; 
+                        method=&quot;POST&quot;&gt;
                     </code>
                     <hr>
                     <h5>JQuery</h5>
@@ -628,7 +629,7 @@
                         obj["owner_email"] = "your@email.com"
                     </code>
                 </div>
-                <div class="col-4 d-table-cell border p-2">
+                <div class="col-12 d-flex flex-column d-table-cell border p-2">
                     <h4 class="text-green">Optional</h4>
                     <p class="text-gray">The following are optional attributes</p>
                     <hr>
@@ -638,6 +639,12 @@
                         &lt;textarea name=&quot;message_content&quot; rows=&quot;3&quot;&gt;&lt;/textarea&gt;
                     </code>
                 </div>
+                <!-- <div class="cell">
+                    test
+                </div>
+                <div>
+                    test
+                </div> -->
             </div>
         </div>
     </div>
