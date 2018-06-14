@@ -15,11 +15,12 @@ import (
 const (
 	FALCONEMAIL   = "admin@keplersbox.com"
 	FALCONURL     = "https://warrensbox.github.io/falcon-form"
-	FALCONAME     = "Warren from Falcon Form"
+	FALCONAME     = "Falcon Form"
 	FALCONCOPY    = "Ⓒ 2018 Warrensbox - Crafted with ❤ in Iowa"
-	FALCONSUBJECT = "You've got a message from Message Falcon! "
+	FALCONSUBJECT = "You've got a message from Falcon Form! "
 	SEND_OK       = "{ \"message\": \"Message sent successfully\"}"
 	SEND_NOT_OK   = "{ \"message\": \"Unble to send message\"}"
+	IMGHEADER     = "https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/falcon_form/falcon-form_200.png"
 )
 
 type Person struct {
@@ -120,7 +121,7 @@ func composeEmail(contact_email string, phone_number string, contact_name string
 			},
 			Dictionary: dictionary,
 			Outros: []string{
-				"Need help, or have questions? Just reply to this email, we'd love to help.",
+				"Need help, or have questions? Shoot us an email at support@warrensbox.com.",
 			},
 		},
 	}
@@ -135,7 +136,7 @@ func composeEmailFooterHeader(url string, name string, copyright string) hermes.
 			Name: name,
 			Link: url,
 			// Optional product logo
-			//Logo:      imageHeader,
+			Logo:      IMGHEADER,
 			Copyright: copyright,
 		},
 	}
