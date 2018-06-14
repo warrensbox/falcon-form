@@ -13,14 +13,14 @@ import (
 )
 
 const (
-	FALCONEMAIL   = "admin@keplersbox.com"
+	FALCONEMAIL   = "support@warrensbox.com"
 	FALCONURL     = "https://warrensbox.github.io/falcon-form"
 	FALCONAME     = "Falcon Form"
 	FALCONCOPY    = "Ⓒ 2018 Warrensbox - Crafted with ❤ in Iowa"
 	FALCONSUBJECT = "You've got a message from Falcon Form! "
 	SEND_OK       = "{ \"message\": \"Message sent successfully\"}"
 	SEND_NOT_OK   = "{ \"message\": \"Unble to send message\"}"
-	IMGHEADER     = "https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/falcon_form/falcon-form_200.png"
+	IMGHEADER     = "https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/falcon_form/falcon-form_350.png"
 )
 
 type Person struct {
