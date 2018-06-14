@@ -1,3 +1,6 @@
+
+<img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/falcon_form/falcon-form_250.png" alt="drawing" width="120" height="130"/>
+
 # Falcon Form
 Simply send your contact form to our URL and we'll forward the information to your email.
 No backend progamming required — perfect for static sites!
@@ -127,6 +130,10 @@ Checkout companies and other individual that are using Form Falcon to forward th
 # Test it out with your email!
 
 Test it out: [Here](https://falcon.warrensbox.com/#testit)  
+
+# How it works?
+
+<img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/falcon_form/falcon-form-diagram.png" alt="drawing" width="500" height="130"/>
 
 # Questions?
 How does this work? Let us try to answer some of your questions.
