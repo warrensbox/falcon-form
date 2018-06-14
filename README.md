@@ -144,7 +144,7 @@ We do not store any information. All contact form contents are forwarded as it i
 We use a serverless architecture. Form contents are send to AWS lambda and routed to AWS SES to forward your email.
 
 ### Need more features?
-We’re working hard to add more features. Shoot us an email at admin@keplersbox.com with your request.
+We’re working hard to add more features. Shoot us an email at support@warrensbox.com with your request.
 
 ### What about this project?
 This is a free and opensource project hosted on github. Feel free to make a pull request and contribute to the project.
