@@ -44,4 +44,6 @@ exclude: [vendor]
 #   - vendor/gems/
 #   - vendor/ruby/
 
+version: 1.0
+
 github: [metadata]
