@@ -62,6 +62,7 @@ workflows:
             branches:
               only: 
               - master
+              - release
       - release:
           requires:
             - update-website
