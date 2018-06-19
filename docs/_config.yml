@@ -46,4 +46,4 @@ exclude: [vendor]
 
 version: 1.0
 
-github: [metadata]
+#github: [metadata]
