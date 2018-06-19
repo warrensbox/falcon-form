@@ -12,8 +12,7 @@ jobs:
     steps:
       - checkout
 
-
-  release:
+  update-website:
     docker:
       - image: warrensbox/go-rb-py-aws
 
@@ -22,9 +21,30 @@ jobs:
       - run: 
           command: |
             echo $GITHUB_TOKEN
-            make publishcircle
             cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
-            make upload
+            make upload   
+            
+  release:
+    docker:
+      - image: warrensbox/go-rb-py-aws
+
+    steps:
+      - checkout
+      - run: 
+          command: |
+            set +e
+            source version
+            export RELEASE_VERSION; 
+            RELEASE_VERSION=$RELEASE_VERSION.${CIRCLE_BUILD_NUM}
+            export RELEASE_VERSION;
+            echo $RELEASE_VERSION
+            git config user.email "warren.veerasingam@gmail.com"
+            git config user.name "warrensbox"
+            git tag -a ${RELEASE_VERSION} -m "Release Version"
+            git push origin ${RELEASE_VERSION}
+            curl -L https://git.io/goreleaser | VERSION=v0.76.1 bash
+            make publishcircle
+
          
 workflows:
   version: 2
@@ -32,13 +52,20 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - release:
+      - update-website:
           requires:
             - build
           filters:
             branches:
               only: 
               - master
+      - release:
+          requires:
+            - update-website
+          filters:
+            branches:
+              only: 
+              - release
 
 
 

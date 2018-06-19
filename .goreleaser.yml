@@ -1,0 +1,31 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+builds:
+  - ldflags:
+    - -s -w -X "main.version={{.Env.RELEASE_VERSION}}"
+  - main: main.go
+    binary: tfswitch
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+checksum:
+  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+archive:
+  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+  replacements:
+    darwin: darwin
+    linux: linux
+    386: 386
+    amd64: amd64
+  format_overrides:
+  - goos: windows
+    format: zip

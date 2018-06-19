@@ -36,11 +36,11 @@ var (
 	HTTPMethodNotSupported = errors.New("no name was provided in the HTTP body")
 )
 
-type Response struct {
-	StatusCode int `json:"statusCode"`
-	//Headers    map[string]string `json:"headers"`
-	Body string `json:"body"`
-}
+// type Response struct {
+// 	StatusCode int `json:"statusCode"`
+// 	//Headers    map[string]string `json:"headers"`
+// 	Body string `json:"body"`
+// }
 
 type Message struct {
 	OwnerEmail     string `json:"owner_email"`
