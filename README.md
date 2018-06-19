@@ -138,7 +138,7 @@ Test it out: [Here](https://falcon.warrensbox.com/#testit)
 How does this work? Let us try to answer some of your questions.
 
 ### How about my privacy?
-We do not store any information. All contact form contents are forwarded as it is.
+We do not store any information. All contact form contents are forwarded as is.
 
 ### How does this work?
 We use a serverless architecture. Form contents are send to AWS lambda and routed to AWS SES to forward your email.
