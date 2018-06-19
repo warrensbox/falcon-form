@@ -167,7 +167,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		}
 
 		msgInfo := lib.SendEmail(ownerEmail, contactEmail, contactPhone, contactName, msgContent)
-		fmt.Println(msgInfo)
+		fmt.Println(msgInfo) //print msg
 
 		if request.Headers["origin"] != "" {
 			redirect["Location"] = request.Headers["origin"]
