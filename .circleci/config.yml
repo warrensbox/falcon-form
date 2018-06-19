@@ -20,7 +20,6 @@ jobs:
       - checkout
       - run: 
           command: |
-            echo $GITHUB_TOKEN
             cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
             make upload   
 
@@ -38,13 +37,13 @@ jobs:
             RELEASE_VERSION=$RELEASE_VERSION.${CIRCLE_BUILD_NUM}
             export RELEASE_VERSION;
             echo $RELEASE_VERSION
+            go get -v -t -d ./...
             git config user.email "warren.veerasingam@gmail.com"
             git config user.name "warrensbox"
             git tag -a ${RELEASE_VERSION} -m "Release Version"
             git push origin ${RELEASE_VERSION}
             curl -L https://git.io/goreleaser | VERSION=v0.76.1 bash
             make publishcircle
-            echo $GITHUB_TOKEN
             cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
             make upload   
 
