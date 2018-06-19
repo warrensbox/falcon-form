@@ -66,12 +66,14 @@ var (
 	contactPhone string
 	msgContent   string
 	contactName  string
+	statusCode   int
 )
 
 //HandleRequest incoming request
 func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	redirect := make(map[string]string)
+	statusCode = 200
 
 	redirect["Location"] = DEFAULT
 	redirect["Access-Control-Allow-Origin"] = "*"
@@ -79,7 +81,8 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 	if request.HTTPMethod == "GET" {
 		fmt.Printf("GET METHOD\n")
-		return events.APIGatewayProxyResponse{Headers: redirect, StatusCode: 301}, nil
+		statusCode = 301
+		return events.APIGatewayProxyResponse{Headers: redirect, StatusCode: statusCode}, nil
 	} else if request.HTTPMethod == "POST" {
 
 		fmt.Printf("POST METHOD\n")
@@ -107,6 +110,8 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			contactPhone = content.ContactPhone
 			msgContent = content.MessageContent
 
+			statusCode = 200
+
 		} else if re.MatchString(parameter) {
 			fmt.Println("It's a form")
 			errFormat := lib.ValidateFormat(parameter)
@@ -127,7 +132,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				fmt.Printf("Contact email %q \n", content[CONTACTEMAIL][0])
 				contactEmail = content[CONTACTEMAIL][0]
 			} else {
-				fmt.Printf("no phone")
+				fmt.Printf("no email")
 				contactEmail = ""
 			}
 
@@ -155,6 +160,8 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				msgContent = ""
 			}
 
+			statusCode = 301
+
 		} else {
 			return events.APIGatewayProxyResponse{}, HTTPMethodNotSupported
 		}
@@ -166,8 +173,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			redirect["Location"] = request.Headers["origin"]
 		}
 
-		fmt.Println(redirect)
-		return events.APIGatewayProxyResponse{Headers: redirect, StatusCode: 200}, nil
+		return events.APIGatewayProxyResponse{Headers: redirect, StatusCode: statusCode}, nil
 	} else {
 		fmt.Printf("NEITHER\n")
 		return events.APIGatewayProxyResponse{}, HTTPMethodNotSupported
