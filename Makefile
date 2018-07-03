@@ -1,6 +1,6 @@
 build:
 	dep ensure
-	env GOOS=linux go build -ldflags="-s -w" -o bin/send-msg main.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/message-falcon main.go
 
 publishcircle:
 	go get -v -t -d ./...
