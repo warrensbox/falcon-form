@@ -51,18 +51,14 @@
     <link type="application/atom+xml" rel="alternate" href="https://services.github.com/feed.xml" title="Falcon Form | Contact Form Made Simple"
     />
 
-    <script>
-        // (function (g, h, s, e, r, v, i) {
-        // g['GoogleAnalyticsObject'] = r; g[r] = g[r] || function () {
-        //     (g[r].q = g[r].q || []).push(arguments)
-        // }, g[r].l = 1 * new Date(); v = h.createElement(s),
-        //     i = h.getElementsByTagName(s)[0]; v.async = 1; v.src = e; i.parentNode.insertBefore(v, i)
-        // })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    <!-- Global site tag (gtag.js) - Google Analytics falcon form-->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120055973-7"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-        // ga('create', 'UA-3769691-2', 'auto');
-        // ga('send', 'pageview');
-
-
+        gtag('config', 'UA-120055973-7');
     </script>
 
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -1036,6 +1032,22 @@
 
         //     submit.insertAdjacentHTML('beforebegin', out);
         // })();
+    </script>
+
+    <script>
+
+        
+        (function (g, h, s, e, r, v, i) {
+        g['GoogleAnalyticsObject'] = r; g[r] = g[r] || function () {
+            (g[r].q = g[r].q || []).push(arguments)
+        }, g[r].l = 1 * new Date(); v = h.createElement(s),
+            i = h.getElementsByTagName(s)[0]; v.async = 1; v.src = e; i.parentNode.insertBefore(v, i)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-120055973-7', 'auto');
+        ga('send', 'pageview');
+
+
     </script>
 
     <div class="g-recaptcha" data-sitekey="6LfpN0gUAAAAANaXI_h9p7HcNe1pp_jkUlwqG4w8" data-callback="onSubmit" data-size="invisible">
