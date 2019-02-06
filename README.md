@@ -124,7 +124,7 @@ window.addEventListener("load", function () {
 
 Checkout companies and other individual that are using Form Falcon to forward their contact forms.
 
-[KeplersBox](https://www.keplersbox.com/)   
+[KeplersBox](http://keplersbox.com/)   
 [PingPoint](https://d3egx0ry98r1q5.cloudfront.net/) 
 [Portfolio Website](http://warren.veerasingam.com) 
 
