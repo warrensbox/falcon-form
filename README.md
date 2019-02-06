@@ -4,6 +4,8 @@
 Simply send your contact form to our URL and we'll forward the information to your email.
 No backend progamming required — perfect for static sites!
 
+[Test it out with your email here!](http://falcon-form.warrensbox.com/#testit)
+
 ## Pure HTML example
 If you want to keep things simple by only using HTML to forward your form content, follow the example below:
 ```html
@@ -122,7 +124,7 @@ window.addEventListener("load", function () {
 
 Checkout companies and other individual that are using Form Falcon to forward their contact forms.
 
-[KeplersBox](https://www.keplersbox.com/)   
+[KeplersBox](http://keplersbox.com/)   
 [PingPoint](https://d3egx0ry98r1q5.cloudfront.net/) 
 [Portfolio Website](http://warren.veerasingam.com) 
 
