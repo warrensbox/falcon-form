@@ -124,17 +124,6 @@ window.addEventListener("load", function () {
 `<input type="text" name="contact_number"> `      
  `<textarea name="message_content" rows="3"></textarea>`    
 
-## Sample Use Cases
-
-Checkout companies and other individual that are using Form Falcon to forward their contact forms.
-
-[KeplersBox](http://keplersbox.com/)   
-[PingPoint](https://d3egx0ry98r1q5.cloudfront.net/) 
-[Portfolio Website](http://warren.veerasingam.com) 
-
-# Test it out with your email!
-
-Test it out: [Here](https://falcon.warrensbox.com/#testit)  
 
 # How it works?
 
