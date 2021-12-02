@@ -1,9 +1,8 @@
-### This application is depreciated
 <img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/falcon_form/falcon-form_350.png" alt="drawing" width="350" height="73"/>
-
 
 ## New Proposed Solution
 * Use Google App Script
+* This project is no longer maintained
 
 Simply send your contact form to our URL and we'll forward the information to your email.
 No backend progamming required — perfect for static sites!
