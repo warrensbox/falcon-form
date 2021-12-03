@@ -21,4 +21,4 @@ publish:
 	
 
 upload:
-	aws s3 cp --recursive --acl public-read docs/_site s3://falcon-form.warrensbox.com/ 
+	aws s3 cp --recursive --acl public-read docs/ s3://falcon-form.warrensbox.com/ 

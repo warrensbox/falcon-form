@@ -21,7 +21,7 @@ jobs:
       - run: 
           command: |
             echo $GITHUB_TOKEN
-            cd docs; gem update --system; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+            cd docs
             make upload   
 
   release:
@@ -45,7 +45,7 @@ jobs:
             curl -L https://git.io/goreleaser | VERSION=v0.76.1 bash
             make publishcircle
             echo $GITHUB_TOKEN
-            cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+            cd docs;
             make upload   
 
          
