@@ -20,8 +20,6 @@ jobs:
       - checkout
       - run: 
           command: |
-            echo $GITHUB_TOKEN
-            cd docs
             make upload   
 
   release:
@@ -44,8 +42,6 @@ jobs:
             git push origin ${RELEASE_VERSION}
             curl -L https://git.io/goreleaser | VERSION=v0.76.1 bash
             make publishcircle
-            echo $GITHUB_TOKEN
-            cd docs;
             make upload   
 
          

@@ -18,7 +18,6 @@ publish:
 		--function-name  message-falcon \
 		--zip-file fileb://./message-falcon.zip
 
-	
 
 upload:
 	aws s3 cp --recursive --acl public-read docs/ s3://falcon-form.warrensbox.com/ 
