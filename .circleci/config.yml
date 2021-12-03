@@ -21,7 +21,7 @@ jobs:
       - run: 
           command: |
             echo $GITHUB_TOKEN
-            cd docs; bundle update --bundler; gem install bundler:1.16.2; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+            cd docs; gem update --system; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
             make upload   
 
   release:
